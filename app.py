@@ -11,6 +11,8 @@ from error import AnyError
 from model import model_iris, model_golf, basic_model_golf, model_iris_with_normalization
 from load_dataset import load_dataset
 
+
+# Loading models
 model_iris()
 model_golf()
 basic_model_golf()

@@ -1,6 +1,7 @@
 import pandas as pd
 from os import path
 from error import AnyError
+import logging
 
 
 def load_dataset(dataset_name, start_index, end_index, index_name):
@@ -25,5 +26,6 @@ def load_dataset(dataset_name, start_index, end_index, index_name):
 
         return Y, X
 
-    except Exception as any_error:
+    except Exception as error:
+        logging.error(error)
         raise AnyError
