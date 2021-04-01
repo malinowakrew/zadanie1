@@ -2,47 +2,51 @@ from flask import Flask, request, jsonify
 import pandas as pd
 from os import path, environ
 import pickle
+import logging
 
-from sklearn import metrics
+from sklearn import preprocessing, model_selection, ensemble, metrics
 
+from werkzeug.exceptions import InternalServerError
 from error import AnyError
+
+from model import model_iris, model_golf
+from load_dataset import load_dataset
+
+model_iris()
+model_golf()
+
 
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route('/hallo')
 def hello_world():
-    return 'Niech moc będzie z rekrutującymi'
+    numer = int(request.json.get('numer', None))
+
+    return {'Niech moc będzie z rekrutującymi': numer}
 
 
 @app.route('/api/predictions', methods=['GET'])
 def predictions():
-    model_name = request.json.get('model_name', None)
-    dataset_name = request.json.get('dataset_name', None)
-    index_name = request.json.get('index_name', None)
-    start_index = request.json.get('start_index', None)
-    end_index = request.json.get('end_index', None)
-
-    data = load_dataset(dataset_name, start_index, end_index, index_name)
-
-    Y = data[index_name]
-    X = data.drop(index_name, axis=1)
-
-    with open(path.join("./models", model_name), 'rb') as fp:
-        pickle_model = pickle.load(fp)
-
-    y_pred = pickle_model.predict(X)
-
-    return {"model accuracy": metrics.accuracy_score(Y, y_pred)}, 200
-
-
-def load_dataset(dataset_name, start_index, end_index, index_name):
     try:
-        return pd.read_csv(path.join("./data", dataset_name)).iloc[start_index:end_index, :]
-        #.set_index(index_name)
-        # yield pd.read_csv(path.join("./data", dataset_name)).set_index(index_name).iloc[start_index:end_index, :].Index
+        model_name = request.json.get('model_name', None)
+        dataset_name = request.json.get('dataset_name', None)
+        index_name = request.json.get('index_name', None)
+        start_index = request.json.get('start_index', None)
+        end_index = request.json.get('end_index', None)
 
-    except Exception as any_error:
+        Y, X = load_dataset(dataset_name, start_index, end_index, index_name)
+
+        with open(path.join("./models", model_name), 'rb') as fp:
+            pickle_model = pickle.load(fp)
+
+        y_pred = pickle_model.predict(X)
+
+        return {"model accuracy": metrics.accuracy_score(Y, y_pred),
+                "predictions": list(y_pred)}, 200
+
+    except Exception as error:
+        logging.error(error)
         raise AnyError
 
 
@@ -50,6 +54,12 @@ def load_dataset(dataset_name, start_index, end_index, index_name):
 def handle_bad_request(error):
     return jsonify({"route": False,
                     "text": str(error)}), 404
+
+
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(error):
+    return jsonify({"route": False,
+                    "text": str(error)}), 500
 
 
 if __name__ == '__main__':
