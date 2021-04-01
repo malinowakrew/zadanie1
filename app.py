@@ -1,29 +1,28 @@
 from flask import Flask, request, jsonify
-import pandas as pd
 from os import path, environ
 import pickle
 import logging
 
-from sklearn import preprocessing, model_selection, ensemble, metrics
+from sklearn import metrics
 
 from werkzeug.exceptions import InternalServerError
 from error import AnyError
 
-from model import model_iris, model_golf
+from model import model_iris, model_golf, basic_model_golf, model_iris_with_normalization
 from load_dataset import load_dataset
 
 model_iris()
 model_golf()
+basic_model_golf()
+model_iris_with_normalization()
 
 
 app = Flask(__name__)
 
 
-@app.route('/hallo')
+@app.route('/hello')
 def hello_world():
-    numer = int(request.json.get('numer', None))
-
-    return {'Niech moc będzie z rekrutującymi': numer}
+    return {'Niech moc będzie z rekrutującymi'}
 
 
 @app.route('/api/predictions', methods=['GET'])
