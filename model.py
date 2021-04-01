@@ -1,5 +1,4 @@
 import pandas as pd
-from os import path
 from sklearn import preprocessing, model_selection, ensemble, linear_model
 import pickle
 
@@ -15,7 +14,7 @@ def model_iris(dataset_name="iris.csv"):
     forest_clf = ensemble.RandomForestClassifier(random_state=0, n_estimators=50, max_depth=13)
     forest_clf.fit(X_train, y_train)
 
-    filename = path.join("./models", "iris_random_forest_without_normalize.pickle")
+    filename = "models/iris_random_forest_without_normalize.pickle"
     with open(filename, 'wb') as fp:
         pickle.dump(forest_clf, fp)
 

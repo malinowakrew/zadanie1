@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
+
 from os import path, environ
 import pickle
 import logging
-
 from sklearn import metrics
 
 from werkzeug.exceptions import InternalServerError
-from error import AnyError
 
+from error import AnyError
 from model import model_iris, model_golf, basic_model_golf, model_iris_with_normalization
 from load_dataset import load_dataset
 
@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 @app.route('/hello')
 def hello_world():
-    return {'Niech moc będzie z rekrutującymi'}
+    return 'Niech moc będzie z rekrutującymi'
 
 
 @app.route('/api/predictions', methods=['GET'])

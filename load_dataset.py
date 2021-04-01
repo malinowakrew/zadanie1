@@ -25,8 +25,5 @@ def load_dataset(dataset_name, start_index, end_index, index_name):
 
         return Y, X
 
-        #.set_index(index_name)
-        # yield pd.read_csv(path.join("./data", dataset_name)).set_index(index_name).iloc[start_index:end_index, :].Index
-
     except Exception as any_error:
         raise AnyError
